@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha das Gerações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">BATALHA DAS <span>GERAÇÕES</span></h1>
+        </header>
+
+        <!-- PLACAR DO JOGO -->
+        <div class="scoreboard">
+            <div class="score pais-score">PAIS: <span id="scorePais">0</span></div>
+            <div class="score filhos-score">FILHOS: <span id="scoreFilhos">0</span></div>
+        </div>
+
+        <main class="glass-card">
+            <!-- INDICADOR DE TURNO -->
+            <div class="turn-indicator" id="turnIndicator">Vez dos: PAIS</div>
+
+            <div class="card-header">
+                <span class="category">Categoria: <strong id="categoryText">Carregando...</strong></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <h3 class="question-text" id="questionText">Preparando a batalha...</h3>
+
+            <div class="options-grid" id="optionsGrid">
+                <!-- Os botões serão injetados aqui pelo JavaScript -->
+            </div>
+
+            <div class="card-footer">
+                <span class="question-counter" id="questionCounter">Pergunta 0 de 10</span>
+                <button class="btn-confirm" id="btnNext" disabled>Próxima Pergunta</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
