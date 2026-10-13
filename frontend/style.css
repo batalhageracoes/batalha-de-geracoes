@@ -1,7 +1,7 @@
 :root {
     --blue-bg: #0b1953;
     --orange-bg: #ff6a00;
-    --btn-quiz: #1a62d6; /* Cor azul única, contrastante e elegante para todas as opções */
+    --btn-quiz: #1a62d6;
     --btn-quiz-hover: #144eb0;
 }
 
@@ -25,7 +25,7 @@ body {
     color: #333;
 }
 
-/* PLACAR HUD FIXO */
+/* 1. DESKTOP / MONITORES LARGOS (PADRÃO ATUAL) */
 .scoreboard {
     position: fixed;
     top: 180px;
@@ -56,7 +56,6 @@ body {
 .pais-score { background: var(--blue-bg); }
 .filhos-score { background: var(--orange-bg); }
 
-/* ÁREA CENTRAL */
 .container { 
     width: 100%; 
     max-width: 620px; 
@@ -69,26 +68,75 @@ body {
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-radius: 20px;
-    padding: 24px 30px;
+    padding: 24px 28px;
     width: 100%;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
+/* LOBBY DE CATEGORIAS */
+.section-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    text-align: center;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.section-subtitle {
+    font-size: 0.95rem;
+    text-align: center;
+    color: #555;
+    margin-bottom: 18px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cat-btn {
+    padding: 14px 10px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: #f1f5f9;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.cat-btn:hover {
+    background: #0b1953;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(11, 25, 83, 0.25);
+}
+
+.cat-btn[data-cat="Todas"] {
+    grid-column: span 2;
+    background: linear-gradient(90deg, #1a62d6, #ff6a00);
+    color: white;
+    font-size: 1.05rem;
+}
+
+/* ELEMENTOS DO QUIZ */
 .turn-indicator {
     text-align: center;
     font-size: 1.25rem;
     font-weight: 900;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     padding: 8px;
     border-radius: 10px;
     color: white;
     text-transform: uppercase;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .turn-pais { background-color: var(--blue-bg); }
@@ -98,10 +146,10 @@ body {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 18px; 
+    margin-bottom: 16px; 
 }
 
-.category { font-size: 1rem; color: #555; }
+.category { font-size: 0.95rem; color: #555; }
 
 .progress-bar { 
     width: 38%; 
@@ -112,59 +160,53 @@ body {
 }
 
 .progress-fill { 
-    width: 10%; 
+    width: 0%; 
     height: 100%; 
     background: linear-gradient(90deg, #1a62d6, #ff6a00); 
     transition: width 0.3s ease; 
 }
 
 .question-text { 
-    font-size: 1.35rem; 
+    font-size: 1.3rem; 
     text-align: center; 
-    margin-bottom: 22px; 
+    margin-bottom: 20px; 
     color: #111; 
     font-weight: 800; 
-    line-height: 1.3; 
+    line-height: 1.35; 
 }
 
 .options-grid { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 
     gap: 12px; 
-    margin-bottom: 22px; 
+    margin-bottom: 20px; 
 }
 
-/* BOTÕES DAS QUESTÕES: COR ÚNICA E EQUILIBRADA */
 .option-btn {
     background-color: var(--btn-quiz);
-    padding: 14px 12px; 
-    font-size: 1.05rem; 
+    padding: 13px 10px; 
+    font-size: 1rem; 
     font-weight: bold; 
     border: none; 
     border-radius: 12px;
     cursor: pointer; 
     transition: all 0.2s; 
     color: white; 
+    min-height: 48px;
     box-shadow: 0 4px 8px rgba(26, 98, 214, 0.3);
 }
 
 .option-btn:hover:not(:disabled) { 
     background-color: var(--btn-quiz-hover);
     transform: translateY(-2px); 
-    box-shadow: 0 6px 12px rgba(20, 78, 176, 0.4); 
 }
 
-.option-btn:disabled { 
-    cursor: not-allowed; 
-    opacity: 0.9; 
-}
+.option-btn:disabled { cursor: not-allowed; opacity: 0.9; }
 
-/* FEEDBACK DE ACERTO / ERRO */
 .option-btn.correct { 
     background-color: #22c55e !important; 
     border: 3px solid #fff; 
     transform: scale(1.02); 
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
 }
 
 .option-btn.incorrect { 
@@ -179,14 +221,10 @@ body {
     align-items: center; 
 }
 
-.question-counter { 
-    font-weight: bold; 
-    color: #555; 
-    font-size: 0.95rem; 
-}
+.question-counter { font-weight: bold; color: #555; font-size: 0.9rem; }
 
 .btn-confirm { 
-    padding: 9px 20px; 
+    padding: 10px 22px; 
     font-size: 0.95rem; 
     font-weight: bold; 
     border: none; 
@@ -194,102 +232,153 @@ body {
     cursor: pointer; 
     background: #222; 
     color: white; 
-    transition: 0.2s; 
 }
 
-.btn-confirm:hover:not(:disabled) { background: #000; transform: scale(1.05); }
 .btn-confirm:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
 
-/* DESTAQUE E FOGOS: ECRÃ DE VITÓRIA */
-.end-screen {
-    text-align: center;
-    padding: 10px 0;
-    animation: popIn 0.5s ease-out;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
+/* ECRÃ DE FIM DE JOGO */
+.end-screen { text-align: center; }
 
 .trophy-wrapper {
     display: inline-block;
     animation: trophyFloat 1.8s ease-in-out infinite;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 @keyframes trophyFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(4deg); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
 
-.trophy-icon {
-    font-size: 4.8rem;
-    display: inline-block;
-    filter: drop-shadow(0 6px 12px rgba(255, 180, 0, 0.6));
-}
+.trophy-icon { font-size: 4.5rem; }
 
 .winner-badge {
     display: inline-block;
     background: #ffd700;
     color: #222;
     font-weight: 900;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 2px;
-    padding: 4px 14px;
+    padding: 3px 12px;
     border-radius: 20px;
     margin-bottom: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .winner-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 900;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .score-summary {
     background: rgba(0, 0, 0, 0.05);
-    padding: 10px 20px;
-    border-radius: 12px;
+    padding: 8px 18px;
+    border-radius: 10px;
     display: inline-block;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
-.final-score {
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #333;
+.final-score { font-size: 1.25rem; font-weight: 800; color: #333; }
+
+.end-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-restart, .btn-change-cat {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 900;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .btn-restart {
-    padding: 14px 34px;
-    font-size: 1.15rem;
-    font-weight: 900;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
     background: linear-gradient(90deg, #1a62d6, #ff6a00);
     color: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s, filter 0.2s;
 }
 
-.btn-restart:hover {
-    transform: scale(1.06);
-    filter: brightness(1.1);
+.btn-change-cat {
+    background: #334155;
+    color: white;
 }
 
-@media (max-width: 900px) {
+/* 2. ADAPTAÇÃO PARA TABLETS (768px a 1024px) */
+@media (max-width: 1024px) {
     .scoreboard {
-        position: static;
-        max-width: 95%;
-        padding: 0;
-        margin-bottom: 12px;
+        top: 140px;
+        max-width: 90%;
+        padding: 0 10px;
     }
-    .pais-score, .filhos-score { font-size: 1.1rem; padding: 8px 16px; }
-    .container { margin-top: 160px; max-width: 92%; }
-    .options-grid { grid-template-columns: 1fr; }
+    .pais-score, .filhos-score {
+        font-size: 1.25rem;
+        padding: 10px 20px;
+    }
+    .container {
+        margin-top: 290px;
+        max-width: 580px;
+    }
+}
+
+/* 3. ADAPTAÇÃO PARA SMARTPHONES / TELAS VERTICAIS (< 768px) */
+@media (max-width: 767px) {
+    body {
+        background-position: center top;
+        align-items: flex-start;
+        padding-bottom: 20px;
+    }
+
+    /* Placar transforma-se numa barra superior integrada */
+    .scoreboard {
+        position: sticky;
+        top: 8px;
+        margin-bottom: 10px;
+        padding: 0 12px;
+        justify-content: space-between;
+    }
+
+    .pais-score, .filhos-score {
+        font-size: 1.05rem;
+        padding: 8px 16px;
+        border-radius: 12px;
+        border-width: 2px;
+    }
+
+    .container {
+        margin-top: 140px; /* Reduz a distância para não cobrir a tela do celular */
+        padding: 10px;
+        max-width: 95%;
+    }
+
+    .glass-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+    }
+
+    .question-text {
+        font-size: 1.15rem;
+        margin-bottom: 16px;
+    }
+
+    /* Alternativas viram 1 coluna para toque confortável */
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cat-btn[data-cat="Todas"] {
+        grid-column: span 1;
+    }
+
+    .end-actions {
+        flex-direction: column;
+    }
 }

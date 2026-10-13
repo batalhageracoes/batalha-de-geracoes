@@ -2,41 +2,55 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Batalha das Gerações</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="scoreboard">
+    <!-- PLACAR HUD -->
+    <header class="scoreboard">
         <div class="score pais-score">PAIS: <span id="scorePais">0</span></div>
         <div class="score filhos-score">FILHOS: <span id="scoreFilhos">0</span></div>
-    </div>
+    </header>
 
     <div class="container">
         <main class="glass-card">
-            <!-- ÁREA DO QUIZ -->
-            <div id="quizArea">
+            <!-- 1. TELA DE SELEÇÃO DE CATEGORIA -->
+            <section id="categoryScreen" class="screen-view">
+                <h2 class="section-title">Escolha o Tema</h2>
+                <p class="section-subtitle">Selecione uma categoria para a rodada:</p>
+                <div class="category-grid">
+                    <button class="cat-btn" data-cat="Todas">🎲 Assuntos Gerais (Mix)</button>
+                    <button class="cat-btn" data-cat="Músicas">🎵 Músicas</button>
+                    <button class="cat-btn" data-cat="Filmes">🎬 Filmes</button>
+                    <button class="cat-btn" data-cat="Brinquedos">🪁 Brinquedos & Brincadeiras</button>
+                    <button class="cat-btn" data-cat="Famosos">⭐ Famosos & Influencers</button>
+                    <button class="cat-btn" data-cat="Doces">🍬 Doces de Infância</button>
+                </div>
+            </section>
+
+            <!-- 2. ÁREA DO QUIZ -->
+            <section id="quizArea" class="screen-view" style="display: none;">
                 <div class="turn-indicator" id="turnIndicator">Vez dos: PAIS</div>
 
                 <div class="card-header">
-                    <span class="category">Categoria: <strong id="categoryText">Carregando...</strong></span>
+                    <span class="category">Categoria: <strong id="categoryText">Geral</strong></span>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
                 </div>
 
                 <h3 class="question-text" id="questionText">Carregando pergunta...</h3>
-
                 <div class="options-grid" id="optionsGrid"></div>
 
                 <div class="card-footer">
-                    <span class="question-counter" id="questionCounter">Pergunta 0 de 6</span>
+                    <span class="question-counter" id="questionCounter">Pergunta 0 de 0</span>
                     <button class="btn-confirm" id="btnNext" disabled>Próxima Pergunta</button>
                 </div>
-            </div>
+            </section>
 
-            <!-- ECRÃ DE FIM DE JOGO COM DESTAQUE -->
-            <div id="endScreen" class="end-screen" style="display: none;">
+            <!-- 3. TELA DE FIM DE JOGO -->
+            <section id="endScreen" class="screen-view end-screen" style="display: none;">
                 <div class="trophy-wrapper">
                     <span class="trophy-icon">🏆</span>
                 </div>
@@ -45,12 +59,14 @@
                 <div class="score-summary">
                     <p id="finalScoreText" class="final-score">Pais: 0 | Filhos: 0</p>
                 </div>
-                <button class="btn-restart" id="btnRestart">Jogar Novamente</button>
-            </div>
+                <div class="end-actions">
+                    <button class="btn-restart" id="btnRestart">Jogar Novamente</button>
+                    <button class="btn-change-cat" id="btnChangeCat">Trocar Categoria</button>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- Script de confetes e fogos -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
