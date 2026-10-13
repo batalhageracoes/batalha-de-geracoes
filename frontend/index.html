@@ -7,41 +7,51 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="scoreboard">
+        <div class="score pais-score">PAIS: <span id="scorePais">0</span></div>
+        <div class="score filhos-score">FILHOS: <span id="scoreFilhos">0</span></div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1 class="logo">BATALHA DAS <span>GERAÇÕES</span></h1>
-        </header>
-
-        <!-- PLACAR DO JOGO -->
-        <div class="scoreboard">
-            <div class="score pais-score">PAIS: <span id="scorePais">0</span></div>
-            <div class="score filhos-score">FILHOS: <span id="scoreFilhos">0</span></div>
-        </div>
-
         <main class="glass-card">
-            <!-- INDICADOR DE TURNO -->
-            <div class="turn-indicator" id="turnIndicator">Vez dos: PAIS</div>
+            <!-- ÁREA DO QUIZ -->
+            <div id="quizArea">
+                <div class="turn-indicator" id="turnIndicator">Vez dos: PAIS</div>
 
-            <div class="card-header">
-                <span class="category">Categoria: <strong id="categoryText">Carregando...</strong></span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+                <div class="card-header">
+                    <span class="category">Categoria: <strong id="categoryText">Carregando...</strong></span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <h3 class="question-text" id="questionText">Carregando pergunta...</h3>
+
+                <div class="options-grid" id="optionsGrid"></div>
+
+                <div class="card-footer">
+                    <span class="question-counter" id="questionCounter">Pergunta 0 de 6</span>
+                    <button class="btn-confirm" id="btnNext" disabled>Próxima Pergunta</button>
                 </div>
             </div>
 
-            <h3 class="question-text" id="questionText">Preparando a batalha...</h3>
-
-            <div class="options-grid" id="optionsGrid">
-                <!-- Os botões serão injetados aqui pelo JavaScript -->
-            </div>
-
-            <div class="card-footer">
-                <span class="question-counter" id="questionCounter">Pergunta 0 de 10</span>
-                <button class="btn-confirm" id="btnNext" disabled>Próxima Pergunta</button>
+            <!-- ECRÃ DE FIM DE JOGO COM DESTAQUE -->
+            <div id="endScreen" class="end-screen" style="display: none;">
+                <div class="trophy-wrapper">
+                    <span class="trophy-icon">🏆</span>
+                </div>
+                <span class="winner-badge">GRANDE CAMPEÃO</span>
+                <h2 id="winnerText" class="winner-title">VITÓRIA DOS FILHOS!</h2>
+                <div class="score-summary">
+                    <p id="finalScoreText" class="final-score">Pais: 0 | Filhos: 0</p>
+                </div>
+                <button class="btn-restart" id="btnRestart">Jogar Novamente</button>
             </div>
         </main>
     </div>
 
+    <!-- Script de confetes e fogos -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
