@@ -164,17 +164,23 @@ async function carregarPerguntas() {
     try {
         const url = categoriaSelecionada === 'Todas' ? API_URL : `${API_URL}?category=${encodeURIComponent(categoriaSelecionada)}`;
         const response = await fetch(url);
+
+        if (!response.ok) {
+            const erroApi = await response.json().catch(() => ({}));
+            throw new Error(erroApi.error || `Servidor respondeu com status ${response.status}`);
+        }
+
         const data = await response.json();
 
-        if (data && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
             bancoDeQuestoes = data;
             iniciarPartida();
         } else {
-            alert('Nenhuma pergunta encontrada para esta categoria.');
+            alert(`Nenhuma pergunta encontrada para o tema "${categoriaSelecionada}". Certifique-se de que as perguntas foram cadastradas no banco com essa categoria.`);
         }
     } catch (err) {
-        console.error('Erro ao carregar perguntas:', err);
-        alert('Erro ao conectar à base de perguntas.');
+        console.error('Erro detalhado:', err);
+        alert(`Erro ao conectar: ${err.message}`);
     }
 }
 

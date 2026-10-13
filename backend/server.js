@@ -8,10 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+// Validação das credenciais do Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("ALERTA: SUPABASE_URL ou SUPABASE_KEY não configuradas no ambiente!");
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
@@ -20,20 +25,28 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// Rota com suporte opcional a filtro de categoria (?category=Músicas)
+// Rota com suporte a filtro de categoria com tratamento robusto de erros
 app.get('/api/questions', async (req, res) => {
-  const { category } = req.query;
-  
-  let query = supabase.from('questions').select('*');
-  
-  if (category && category !== 'Todas') {
-    query = query.eq('category', category);
+  try {
+    const { category } = req.query;
+    let query = supabase.from('questions').select('*');
+
+    if (category && category !== 'Todas') {
+      query = query.eq('category', category);
+    }
+
+    const { data, error } = await query.limit(50);
+
+    if (error) {
+      console.error('Erro na consulta Supabase:', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json(data || []);
+  } catch (err) {
+    console.error('Erro interno na API:', err.message);
+    res.status(500).json({ error: err.message });
   }
-
-  const { data, error } = await query.limit(50);
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
 });
 
 const PORT = process.env.PORT || 3000;
