@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -13,17 +14,23 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// Rota de teste para ver se está funcionando
+// Caminho para a pasta frontend (sobe um nível com '../' a partir de backend/)
+const frontendPath = path.join(__dirname, '../frontend');
+
+// 1. Libera o acesso público aos arquivos estáticos (CSS, JS, imagem)
+app.use(express.static(frontendPath));
+
+// 2. Rota principal: entrega o index.html
 app.get('/', (req, res) => {
-  res.send('API Batalha de Gerações rodando!');
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// Rota para buscar perguntas aleatórias
+// Rota da API para buscar perguntas aleatórias
 app.get('/api/questions', async (req, res) => {
   const { data, error } = await supabase
     .from('questions')
     .select('*')
-    .limit(10); // Pega 10 perguntas
+    .limit(10);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
