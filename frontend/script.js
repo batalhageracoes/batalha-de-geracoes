@@ -93,6 +93,18 @@ function tocarSom(tipo) {
             osc.start(agora + tempos[idx]);
             osc.stop(agora + tempos[idx] + 0.4);
         });
+    } else if (tipo === 'tick') {
+        // Bipe curto de alerta (880 Hz)
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, agora);
+        gain.gain.setValueAtTime(0.18, agora);
+        gain.gain.exponentialRampToValueAtTime(0.001, agora + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(agora);
+        osc.stop(agora + 0.08);
     }
 }
 
@@ -121,8 +133,10 @@ function iniciarTimer() {
         tempoRestante--;
         timerText.textContent = tempoRestante;
 
-        if (tempoRestante <= 3) {
+        // Bipe sonoro e alerta visual nos últimos 3 segundos
+        if (tempoRestante <= 3 && tempoRestante > 0) {
             timerBadge.classList.add('warning');
+            tocarSom('tick');
         }
 
         if (tempoRestante <= 0) {
@@ -176,7 +190,7 @@ async function carregarPerguntas() {
             bancoDeQuestoes = data;
             iniciarPartida();
         } else {
-            alert(`Nenhuma pergunta encontrada para o tema "${categoriaSelecionada}". Certifique-se de que as perguntas foram cadastradas no banco com essa categoria.`);
+            alert(`Nenhuma pergunta encontrada para o tema "${categoriaSelecionada}".`);
         }
     } catch (err) {
         console.error('Erro detalhado:', err);
