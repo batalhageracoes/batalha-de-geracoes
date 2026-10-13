@@ -1,5 +1,5 @@
 const API_URL = '/api/questions';
-const TEMPO_LIMITE = 20;
+const TEMPO_LIMITE = 10;
 
 // Estado do Jogo
 let bancoDeQuestoes = [];
@@ -121,7 +121,7 @@ function iniciarTimer() {
         tempoRestante--;
         timerText.textContent = tempoRestante;
 
-        if (tempoRestante <= 5) {
+        if (tempoRestante <= 3) {
             timerBadge.classList.add('warning');
         }
 
