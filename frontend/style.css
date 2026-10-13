@@ -19,17 +19,15 @@ body {
     background-attachment: fixed;
     background-repeat: no-repeat;
     min-height: 100vh;
-    width: 100vw; /* Garante que não passa do tamanho do ecrã */
-    overflow-x: hidden; /* Bloqueia qualquer corte lateral */
-    
-    /* CORREÇÃO CRUCIAL: Empilha os itens verticalmente */
+    width: 100vw;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column; 
     align-items: center; 
     color: #333;
 }
 
-/* 1. DESKTOP / MONITORES LARGOS */
+/* PLACAR HUD */
 .scoreboard {
     position: fixed;
     top: 180px;
@@ -82,7 +80,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
-/* LOBBY DE CATEGORIAS */
+/* TELA DE CATEGORIAS */
 .section-title {
     font-size: 1.6rem;
     font-weight: 900;
@@ -131,7 +129,7 @@ body {
     font-size: 1.05rem;
 }
 
-/* ELEMENTOS DO QUIZ */
+/* CABEÇALHO DO QUIZ E CRONÔMETRO */
 .turn-indicator {
     text-align: center;
     font-size: 1.25rem;
@@ -151,12 +149,36 @@ body {
     justify-content: space-between; 
     align-items: center; 
     margin-bottom: 16px; 
+    gap: 10px;
 }
 
-.category { font-size: 0.95rem; color: #555; }
+.category { font-size: 0.92rem; color: #555; white-space: nowrap; }
+
+/* CRONÔMETRO */
+.timer-badge {
+    background: #e2e8f0;
+    color: #1e293b;
+    font-weight: 900;
+    font-size: 0.95rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.timer-badge.warning {
+    background: #ef4444;
+    color: white;
+    animation: timerPulse 0.6s infinite alternate;
+}
+
+@keyframes timerPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
 
 .progress-bar { 
-    width: 38%; 
+    width: 28%; 
     height: 10px; 
     background: #ddd; 
     border-radius: 6px; 
@@ -240,7 +262,7 @@ body {
 
 .btn-confirm:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
 
-/* ECRÃ DE FIM DE JOGO */
+/* TELA FINAL */
 .end-screen { text-align: center; }
 
 .trophy-wrapper {
@@ -311,9 +333,7 @@ body {
     color: white;
 }
 
-/* ====================================================
-   2. ADAPTAÇÃO PARA TABLETS (768px a 1024px)
-==================================================== */
+/* RESPONSIVIDADE */
 @media (max-width: 1024px) {
     .scoreboard {
         top: 140px;
@@ -330,15 +350,8 @@ body {
     }
 }
 
-/* ====================================================
-   3. ADAPTAÇÃO PARA TELEMÓVEIS / ECRÃS VERTICAIS (< 768px)
-==================================================== */
 @media (max-width: 767px) {
-    body {
-        padding-bottom: 20px;
-    }
-
-    /* Placar fica fixo no topo de forma limpa */
+    body { padding-bottom: 20px; }
     .scoreboard {
         position: fixed;
         top: 10px;
@@ -347,46 +360,22 @@ body {
         width: 100%;
         max-width: 100%;
     }
-
     .pais-score, .filhos-score {
         font-size: 1rem;
         padding: 8px 12px;
         border-radius: 10px;
         border-width: 2px;
     }
-
-    /* Empurra o cartão principal para baixo do logótipo do fundo */
     .container {
         margin-top: 190px; 
         padding: 0;
         width: 92%;
         margin-bottom: 20px;
     }
-
-    .glass-card {
-        padding: 20px 15px;
-    }
-
-    .question-text {
-        font-size: 1.15rem;
-        margin-bottom: 16px;
-    }
-
-    /* Tudo passa a 1 coluna para facilitar o toque no telemóvel */
-    .options-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .category-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cat-btn[data-cat="Todas"] {
-        grid-column: span 1;
-    }
-
-    .end-actions {
-        flex-direction: column;
-    }
+    .glass-card { padding: 20px 15px; }
+    .question-text { font-size: 1.15rem; margin-bottom: 16px; }
+    .options-grid { grid-template-columns: 1fr; gap: 10px; }
+    .category-grid { grid-template-columns: 1fr; }
+    .cat-btn[data-cat="Todas"] { grid-column: span 1; }
+    .end-actions { flex-direction: column; }
 }
