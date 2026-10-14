@@ -1,11 +1,12 @@
 const API_URL = '/api/questions';
-const TEMPO_LIMITE = 20; // Atualizado para 20 segundos
+const TEMPO_LIMITE = 20;
 const SUPABASE_PROJECT_URL = 'https://gwhzjalgfrrgpotwfhrj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3aHpqYWxnZnJyZ3BvdHdmaHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDM5MjgsImV4cCI6MjEwNzQ3OTkyOH0.v50QzSs3I1QkQ94U-hX45tgZi2CZYS-EP66l-RpMILs'; // <-- Substitua pela sua chave!
 
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY) : null;
 
 // Lógica de Retenção e Nomes Customizados
+let currentUser = null;
 let isUserLoggedIn = false;
 let partidasJogadas = 0;
 let nomeEquipa1 = "Pais";
@@ -50,13 +51,20 @@ const scoreFilhosElement = document.getElementById('scoreFilhos');
 const timerBadge = document.getElementById('timerBadge');
 const timerText = document.getElementById('timerText');
 
-// Autenticação
+// Autenticação & Histórico
 const authText = document.getElementById('authText');
 const btnGoogleLogin = document.getElementById('btnGoogleLogin');
 const userProfile = document.getElementById('userProfile');
 const userAvatar = document.getElementById('userAvatar');
 const userName = document.getElementById('userName');
 const btnLogout = document.getElementById('btnLogout');
+const personalStatsCard = document.getElementById('personalStatsCard');
+const statMatches = document.getElementById('statMatches');
+const statTeam1Wins = document.getElementById('statTeam1Wins');
+const statTeam2Wins = document.getElementById('statTeam2Wins');
+const statTeam1Label = document.getElementById('statTeam1Label');
+const statTeam2Label = document.getElementById('statTeam2Label');
+const historySavedAlert = document.getElementById('historySavedAlert');
 
 // Fim de Jogo
 const winnerText = document.getElementById('winnerText');
@@ -66,17 +74,79 @@ const btnChangeCat = document.getElementById('btnChangeCat');
 
 
 // ==========================================
-// 1. AUTENTICAÇÃO
+// 1. AUTENTICAÇÃO E HISTÓRICO DA CONTA (FORMATO B)
 // ==========================================
 async function verificarSessao() {
     if (!supabaseClient) return;
 
     const { data: { session } } = await supabaseClient.auth.getSession();
-    atualizarInterfaceUsuario(session?.user);
+    currentUser = session?.user || null;
+    atualizarInterfaceUsuario(currentUser);
 
     supabaseClient.auth.onAuthStateChange((_event, session) => {
-        atualizarInterfaceUsuario(session?.user);
+        currentUser = session?.user || null;
+        atualizarInterfaceUsuario(currentUser);
     });
+}
+
+async function carregarEstatisticasUsuario() {
+    if (!supabaseClient || !currentUser) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('user_match_history')
+            .select('*')
+            .eq('user_id', currentUser.id);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            personalStatsCard.style.display = 'block';
+            statMatches.textContent = data.length;
+
+            let vitEquipe1 = 0;
+            let vitEquipe2 = 0;
+
+            data.forEach(m => {
+                if (m.score_team1 > m.score_team2) vitEquipe1++;
+                else if (m.score_team2 > m.score_team1) vitEquipe2++;
+            });
+
+            statTeam1Wins.textContent = vitEquipe1;
+            statTeam2Wins.textContent = vitEquipe2;
+            statTeam1Label.textContent = `Vitórias ${data[0].team1_name || 'Equipe 1'}`;
+            statTeam2Label.textContent = `Vitórias ${data[0].team2_name || 'Equipe 2'}`;
+        } else {
+            personalStatsCard.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Erro ao ler estatísticas do usuário:', err.message);
+    }
+}
+
+async function registrarPartidaNoHistorico(vencedorTexto) {
+    if (!supabaseClient || !currentUser) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from('user_match_history')
+            .insert([{
+                user_id: currentUser.id,
+                team1_name: nomeEquipa1,
+                team2_name: nomeEquipa2,
+                score_team1: pontosPais,
+                score_team2: pontosFilhos,
+                winner: vencedorTexto,
+                category: categoriaSelecionada
+            }]);
+
+        if (!error) {
+            historySavedAlert.style.display = 'block';
+            carregarEstatisticasUsuario();
+        }
+    } catch (err) {
+        console.error('Erro ao salvar histórico de partida:', err.message);
+    }
 }
 
 function atualizarInterfaceUsuario(user) {
@@ -92,10 +162,12 @@ function atualizarInterfaceUsuario(user) {
         } else {
             userAvatar.style.display = 'none';
         }
+        carregarEstatisticasUsuario();
     } else {
         btnGoogleLogin.style.display = 'flex';
         authText.style.display = 'block';
         userProfile.style.display = 'none';
+        personalStatsCard.style.display = 'none';
     }
 }
 
@@ -114,6 +186,7 @@ if (btnLogout) {
     btnLogout.addEventListener('click', async () => {
         if (!supabaseClient) return;
         await supabaseClient.auth.signOut();
+        personalStatsCard.style.display = 'none';
     });
 }
 verificarSessao();
@@ -185,12 +258,12 @@ function tocarSom(tipo) {
 }
 
 // ==========================================
-// 3. FLUXO DO JOGO E TIRA-TEIMA
+// 3. FLUXO DO JOGO COM REVEZAMENTO 10x10 RIGOROSO
 // ==========================================
 
 function validarBarreiraLogin() {
     if (partidasJogadas >= 1 && !isUserLoggedIn) {
-        alert("🎉 Vocês já jogaram a vossa partida de teste grátis!\n\nPara desbloquear partidas ilimitadas e guardar os vossos recordes, faça login rapidinho com o Google logo abaixo dos temas.");
+        alert("🎉 Vocês já jogaram a vossa partida de teste grátis!\n\nPara desbloquear partidas ilimitadas e registrar o histórico da família, faça login com o Google logo abaixo dos temas.");
         endScreen.style.display = 'none';
         categoryScreen.style.display = 'block';
         return false;
@@ -252,10 +325,26 @@ function iniciarPartida() {
     pontosPais = 0;
     pontosFilhos = 0;
     desempateAtivo = false;
+    historySavedAlert.style.display = 'none';
     scorePaisElement.textContent = "0";
     scoreFilhosElement.textContent = "0";
 
-    questoesAtuais = embaralhar(bancoDeQuestoes).slice(0, 20);
+    // Separação em dois bancos independentes:
+    // Equipe 1 (Pais) responde às perguntas modernas (target_generation === 'Filhos')
+    // Equipe 2 (Filhos) responde às perguntas antigas (target_generation === 'Pais')
+    const poolEquipe1 = embaralhar(bancoDeQuestoes.filter(q => q.target_generation === 'Filhos'));
+    const poolEquipe2 = embaralhar(bancoDeQuestoes.filter(q => q.target_generation === 'Pais'));
+
+    const selecionadasEq1 = poolEquipe1.slice(0, 10);
+    const selecionadasEq2 = poolEquipe2.slice(0, 10);
+
+    // Montagem do revezamento estrito (10 para cada lado intercaladas):
+    // Rodada 1: Eq1 -> Rodada 2: Eq2 -> Rodada 3: Eq1 ... até 20 perguntas
+    questoesAtuais = [];
+    for (let i = 0; i < 10; i++) {
+        if (selecionadasEq1[i]) questoesAtuais.push(selecionadasEq1[i]);
+        if (selecionadasEq2[i]) questoesAtuais.push(selecionadasEq2[i]);
+    }
 
     teamSetupScreen.style.display = 'none';
     quizArea.style.display = 'block';
@@ -264,10 +353,19 @@ function iniciarPartida() {
 
 function iniciarDesempate() {
     desempateAtivo = true;
-    alert("⚖️ EMPATE! Preparem-se para o Tira-Teima: mais 5 perguntas decisivas!");
+    alert("⚖️ EMPATE! Preparem-se para o Tira-Teima com perguntas extras alternadas!");
 
-    const perguntasRestantes = bancoDeQuestoes.filter(q => !questoesAtuais.includes(q));
-    const extras = embaralhar(perguntasRestantes).slice(0, 5);
+    const poolRestanteEq1 = bancoDeQuestoes.filter(q => q.target_generation === 'Filhos' && !questoesAtuais.includes(q));
+    const poolRestanteEq2 = bancoDeQuestoes.filter(q => q.target_generation === 'Pais' && !questoesAtuais.includes(q));
+
+    const extrasEq1 = embaralhar(poolRestanteEq1).slice(0, 3);
+    const extrasEq2 = embaralhar(poolRestanteEq2).slice(0, 3);
+
+    const extras = [];
+    for (let i = 0; i < Math.max(extrasEq1.length, extrasEq2.length); i++) {
+        if (extrasEq1[i]) extras.push(extrasEq1[i]);
+        if (extrasEq2[i]) extras.push(extrasEq2[i]);
+    }
 
     if (extras.length === 0) {
         alert("Não temos mais perguntas inéditas. O jogo termina num Empate Épico!");
@@ -294,6 +392,7 @@ function mostrarPergunta() {
     const geracaoDaPergunta = q.target_generation || 'Pais';
     let equipaAtual, classeEquipa;
     
+    // Identificação visual do turno
     if (geracaoDaPergunta === 'Pais') {
         equipaAtual = nomeEquipa2;
         classeEquipa = 'turn-filhos';
@@ -353,7 +452,7 @@ function verificarResposta(btnClicado, textoOpcao, respostaCorreta) {
     btnNext.disabled = false;
 }
 
-// 4. TIMER DE 20 SEGUNDOS (Com alerta sonoro nos últimos 5 segundos)
+// 4. TIMER DE 20 SEGUNDOS
 function pararTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -446,6 +545,11 @@ function mostrarEcraFinal() {
 
     tocarSom('vitoria');
     soltarFogosDeArtificio(corDestaque);
+
+    // Registra no histórico privado se o usuário estiver logado
+    if (isUserLoggedIn) {
+        registrarPartidaNoHistorico(vencedor);
+    }
 }
 
 btnRestart.addEventListener('click', () => {

@@ -29,27 +29,15 @@ body {
 
 /* ÁREA DE ROLAGEM DOS TEMAS */
 .category-grid-scroll {
-    max-height: 280px;
+    max-height: 270px;
     overflow-y: auto;
     padding-right: 6px;
     margin-bottom: 10px;
 }
 
-/* Estilização da barra de rolagem interna */
-.category-grid-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-.category-grid-scroll::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 8px;
-}
-.category-grid-scroll::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 8px;
-}
-.category-grid-scroll::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+.category-grid-scroll::-webkit-scrollbar { width: 6px; }
+.category-grid-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+.category-grid-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
 
 .category-grid {
     display: grid;
@@ -84,10 +72,65 @@ body {
     font-size: 1.05rem;
 }
 
+/* CARTÃO DE HISTÓRICO DA FAMÍLIA (FORMATO B) */
+.personal-stats-card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.stats-header {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #334155;
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1.2fr;
+    gap: 8px;
+}
+
+.stat-box {
+    background: #ffffff;
+    padding: 6px 8px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-team1 .stat-number { color: var(--blue-bg); }
+.stat-team2 .stat-number { color: var(--orange-bg); }
+
 /* ÁREA DE LOGIN */
 .auth-section {
     margin-top: 15px;
-    padding-top: 15px;
+    padding-top: 14px;
     border-top: 2px dashed #cbd5e1;
     display: flex;
     flex-direction: column;
@@ -452,7 +495,7 @@ body {
     padding: 8px 18px;
     border-radius: 10px;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .final-score { font-size: 1.25rem; font-weight: 800; color: #333; }
@@ -533,29 +576,10 @@ body {
         margin-bottom: 20px;
     }
 
-    .glass-card { 
-        padding: 20px 15px; 
-    }
-
-    .question-text { 
-        font-size: 1.15rem; 
-        margin-bottom: 16px; 
-    }
-
-    .options-grid { 
-        grid-template-columns: 1fr; 
-        gap: 10px; 
-    }
-
-    .category-grid { 
-        grid-template-columns: 1fr; 
-    }
-
-    .cat-btn[data-cat="Todas"] { 
-        grid-column: span 1; 
-    }
-
-    .end-actions { 
-        flex-direction: column; 
-    }
+    .glass-card { padding: 20px 15px; }
+    .question-text { font-size: 1.15rem; margin-bottom: 16px; }
+    .options-grid { grid-template-columns: 1fr; gap: 10px; }
+    .category-grid { grid-template-columns: 1fr; }
+    .cat-btn[data-cat="Todas"] { grid-column: span 1; }
+    .end-actions { flex-direction: column; }
 }

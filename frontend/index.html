@@ -22,7 +22,6 @@
                 <h2 class="section-title">Escolha o Tema</h2>
                 <p class="section-subtitle">Selecione uma categoria para a rodada:</p>
                 
-                <!-- CONTAINER COM SCROLL ELEGANTE PARA OS TEMAS -->
                 <div class="category-grid-scroll">
                     <div class="category-grid">
                         <button class="cat-btn" data-cat="Todas">🎲 Assuntos Gerais (Mix)</button>
@@ -37,9 +36,28 @@
                     </div>
                 </div>
 
+                <!-- PAINEL DE RANKING PESSOAL (FORMATO B) -->
+                <div id="personalStatsCard" class="personal-stats-card" style="display: none;">
+                    <div class="stats-header">📊 Histórico de Batalhas da Família</div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-number" id="statMatches">0</span>
+                            <span class="stat-label">Partidas</span>
+                        </div>
+                        <div class="stat-box stat-team1">
+                            <span class="stat-number" id="statTeam1Wins">0</span>
+                            <span class="stat-label" id="statTeam1Label">Vitórias Equipe 1</span>
+                        </div>
+                        <div class="stat-box stat-team2">
+                            <span class="stat-number" id="statTeam2Wins">0</span>
+                            <span class="stat-label" id="statTeam2Label">Vitórias Equipe 2</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ÁREA DE LOGIN INTEGRADA -->
                 <div class="auth-section">
-                    <p class="auth-text" id="authText">Faça login para desbloquear partidas ilimitadas!</p>
+                    <p class="auth-text" id="authText">Faça login para desbloquear partidas ilimitadas e registrar seu histórico!</p>
                     <div class="auth-bar">
                         <button id="btnGoogleLogin" class="google-login-btn">
                             <svg class="google-icon" viewBox="0 0 24 24">
@@ -110,6 +128,7 @@
                 <div class="score-summary">
                     <p id="finalScoreText" class="final-score">Pais: 0 | Filhos: 0</p>
                 </div>
+                <p id="historySavedAlert" style="font-size: 0.85rem; color: #16a34a; font-weight: bold; margin-bottom: 12px; display: none;">✅ Partida registrada no histórico da sua conta!</p>
                 <div class="end-actions">
                     <button class="btn-restart" id="btnRestart">Jogar Novamente</button>
                     <button class="btn-change-cat" id="btnChangeCat">Trocar Categoria</button>

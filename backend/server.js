@@ -8,7 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Validação das credenciais do Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
@@ -25,7 +24,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// Rota com suporte a filtro de categoria com tratamento robusto de erros
+// Rota de perguntas sem corte artificial de limite
 app.get('/api/questions', async (req, res) => {
   try {
     const { category } = req.query;
@@ -35,7 +34,8 @@ app.get('/api/questions', async (req, res) => {
       query = query.eq('category', category);
     }
 
-    const { data, error } = await query.limit(50);
+    // Busca até 1000 perguntas (cobre com folga todo o acervo do tema)
+    const { data, error } = await query.limit(1000);
 
     if (error) {
       console.error('Erro na consulta Supabase:', error.message);
