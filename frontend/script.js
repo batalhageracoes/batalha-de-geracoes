@@ -1,7 +1,7 @@
 const API_URL = '/api/questions';
-const TEMPO_LIMITE = 10;
+const TEMPO_LIMITE = 15; // Atualizado para 15 segundos
 const SUPABASE_PROJECT_URL = 'https://gwhzjalgfrrgpotwfhrj.supabase.co';
-const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANON_AQUI'; // <-- Substitua pela sua chave!
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3aHpqYWxnZnJyZ3BvdHdmaHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDM5MjgsImV4cCI6MjEwNzQ3OTkyOH0.v50QzSs3I1QkQ94U-hX45tgZi2CZYS-EP66l-RpMILs'; // <-- Substitua pela sua chave!
 
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY) : null;
 
@@ -19,6 +19,7 @@ let opcaoSelecionada = false;
 let pontosPais = 0;
 let pontosFilhos = 0;
 let categoriaSelecionada = 'Todas';
+let desempateAtivo = false; // Controle do Tira-Teima
 
 let timerInterval = null;
 let tempoRestante = TEMPO_LIMITE;
@@ -184,10 +185,9 @@ function tocarSom(tipo) {
 }
 
 // ==========================================
-// 3. FLUXO DO JOGO
+// 3. FLUXO DO JOGO E TIRA-TEIMA
 // ==========================================
 
-// Validação de Barreira
 function validarBarreiraLogin() {
     if (partidasJogadas >= 1 && !isUserLoggedIn) {
         alert("🎉 Vocês já jogaram a vossa partida de teste grátis!\n\nPara desbloquear partidas ilimitadas e guardar os vossos recordes, faça login rapidinho com o Google logo abaixo dos temas.");
@@ -217,7 +217,6 @@ async function carregarPerguntas() {
 
         if (Array.isArray(data) && data.length > 0) {
             bancoDeQuestoes = data;
-            // Mostra tela de configurar Nomes!
             categoryScreen.style.display = 'none';
             teamSetupScreen.style.display = 'block';
         } else {
@@ -229,11 +228,9 @@ async function carregarPerguntas() {
 }
 
 btnStartMatch.addEventListener('click', () => {
-    // Definir os nomes baseados no input (se vazio, usa o padrão)
     nomeEquipa1 = inputTeam1.value.trim() || "Pais";
     nomeEquipa2 = inputTeam2.value.trim() || "Filhos";
 
-    // Atualiza HUD no topo
     labelTeam1.textContent = nomeEquipa1.toUpperCase();
     labelTeam2.textContent = nomeEquipa2.toUpperCase();
 
@@ -250,17 +247,39 @@ function embaralhar(array) {
 }
 
 function iniciarPartida() {
-    partidasJogadas++; // Contabiliza a partida
+    partidasJogadas++;
     indiceAtual = 0;
     pontosPais = 0;
     pontosFilhos = 0;
+    desempateAtivo = false; // Reinicia o status de tira-teima
     scorePaisElement.textContent = "0";
     scoreFilhosElement.textContent = "0";
 
-    questoesAtuais = embaralhar(bancoDeQuestoes);
+    // Pega exatamente 20 perguntas para a rodada principal
+    questoesAtuais = embaralhar(bancoDeQuestoes).slice(0, 20);
 
     teamSetupScreen.style.display = 'none';
     quizArea.style.display = 'block';
+    mostrarPergunta();
+}
+
+function iniciarDesempate() {
+    desempateAtivo = true;
+    alert("⚖️ EMPATE! Preparem-se para o Tira-Teima: mais 5 perguntas decisivas!");
+
+    // Busca 5 perguntas do banco que não foram usadas nesta rodada
+    const perguntasRestantes = bancoDeQuestoes.filter(q => !questoesAtuais.includes(q));
+    const extras = embaralhar(perguntasRestantes).slice(0, 5);
+
+    if (extras.length === 0) {
+        alert("Não temos mais perguntas inéditas. O jogo termina num Empate Épico!");
+        mostrarEcraFinal();
+        return;
+    }
+
+    // Adiciona as perguntas extras e continua o jogo
+    questoesAtuais = questoesAtuais.concat(extras);
+    indiceAtual++;
     mostrarPergunta();
 }
 
@@ -270,14 +289,14 @@ function mostrarPergunta() {
 
     const q = questoesAtuais[indiceAtual];
     questionText.textContent = q.content;
-    categoryText.textContent = q.category;
-
-    // A Equipa 1 (Azul) responde às perguntas modernas (Target: Filhos)
-    // A Equipa 2 (Laranja) responde às perguntas antigas (Target: Pais)
-    const geracaoDaPergunta = q.target_generation || 'Pais';
     
-    let equipaAtual;
-    let classeEquipa;
+    // Adiciona selo visual se estiver no tira-teima
+    categoryText.innerHTML = desempateAtivo 
+        ? `<span style="color: #ef4444;">🔥 TIRA-TEIMA</span>` 
+        : q.category;
+
+    const geracaoDaPergunta = q.target_generation || 'Pais';
+    let equipaAtual, classeEquipa;
     
     if (geracaoDaPergunta === 'Pais') {
         equipaAtual = nomeEquipa2;
@@ -338,7 +357,7 @@ function verificarResposta(btnClicado, textoOpcao, respostaCorreta) {
     btnNext.disabled = false;
 }
 
-// 4. TIMER
+// 4. TIMER (Agora com 15 segundos e alerta nos últimos 5s)
 function pararTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -354,7 +373,7 @@ function iniciarTimer() {
         tempoRestante--;
         timerText.textContent = tempoRestante;
 
-        if (tempoRestante <= 3 && tempoRestante > 0) {
+        if (tempoRestante <= 5 && tempoRestante > 0) {
             timerBadge.classList.add('warning');
             tocarSom('tick');
         }
@@ -388,7 +407,12 @@ btnNext.addEventListener('click', () => {
         indiceAtual++;
         mostrarPergunta();
     } else {
-        mostrarEcraFinal();
+        // Validação do Desempate (Morte Súbita)
+        if (pontosPais === pontosFilhos && !desempateAtivo) {
+            iniciarDesempate();
+        } else {
+            mostrarEcraFinal();
+        }
     }
 });
 
@@ -429,7 +453,6 @@ function mostrarEcraFinal() {
     soltarFogosDeArtificio(corDestaque);
 }
 
-// Intercetar cliques nos botões finais para validar login
 btnRestart.addEventListener('click', () => {
     if (!validarBarreiraLogin()) return;
     iniciarPartida();
