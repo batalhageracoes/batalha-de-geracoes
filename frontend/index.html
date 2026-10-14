@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- PLACAR HUD (Nomes agora são dinâmicos) -->
+    <!-- PLACAR HUD -->
     <header class="scoreboard">
         <div class="score pais-score"><span id="labelTeam1">PAIS</span>: <span id="scorePais">0</span></div>
         <div class="score filhos-score"><span id="labelTeam2">FILHOS</span>: <span id="scoreFilhos">0</span></div>
@@ -21,17 +21,23 @@
             <section id="categoryScreen" class="screen-view">
                 <h2 class="section-title">Escolha o Tema</h2>
                 <p class="section-subtitle">Selecione uma categoria para a rodada:</p>
-                <div class="category-grid">
-                    <button class="cat-btn" data-cat="Todas">🎲 Assuntos Gerais (Mix)</button>
-                    <button class="cat-btn" data-cat="Músicas">🎵 Músicas</button>
-                    <button class="cat-btn" data-cat="Filmes">🎬 Filmes</button>
-                    <button class="cat-btn" data-cat="Brinquedos">🪁 Brinquedos & Brincadeiras</button>
-                    <button class="cat-btn" data-cat="Famosos">⭐ Famosos & Influencers</button>
-                    <button class="cat-btn" data-cat="Doces">🍬 Doces de Infância</button>
-                    <button class="cat-btn" data-cat="Desenhos">📺 Desenhos & Séries</button>
+                
+                <!-- CONTAINER COM SCROLL ELEGANTE PARA OS TEMAS -->
+                <div class="category-grid-scroll">
+                    <div class="category-grid">
+                        <button class="cat-btn" data-cat="Todas">🎲 Assuntos Gerais (Mix)</button>
+                        <button class="cat-btn" data-cat="Músicas">🎵 Músicas</button>
+                        <button class="cat-btn" data-cat="Filmes">🎬 Filmes</button>
+                        <button class="cat-btn" data-cat="Brinquedos">🪁 Brinquedos & Brincadeiras</button>
+                        <button class="cat-btn" data-cat="Famosos">⭐ Famosos & Influencers</button>
+                        <button class="cat-btn" data-cat="Doces">🍬 Doces de Infância</button>
+                        <button class="cat-btn" data-cat="Desenhos">📺 Desenhos & Séries</button>
+                        <button class="cat-btn" data-cat="Esportes">⚽ Esportes & Memes</button>
+                        <button class="cat-btn" data-cat="Games">🎮 Games & Tech</button>
+                    </div>
                 </div>
 
-                <!-- NOVA ÁREA DE LOGIN INTEGRADA -->
+                <!-- ÁREA DE LOGIN INTEGRADA -->
                 <div class="auth-section">
                     <p class="auth-text" id="authText">Faça login para desbloquear partidas ilimitadas!</p>
                     <div class="auth-bar">
@@ -53,19 +59,19 @@
                 </div>
             </section>
 
-            <!-- NOVO: 1.5. TELA DE PERSONALIZAÇÃO DE EQUIPAS -->
+            <!-- TELA DE PERSONALIZAÇÃO DE EQUIPES -->
             <section id="teamSetupScreen" class="screen-view" style="display: none;">
                 <h2 class="section-title">Quem vai jogar?</h2>
-                <p class="section-subtitle">Personalizem o nome das equipas para a batalha!</p>
+                <p class="section-subtitle">Personalizem o nome das equipes para a batalha!</p>
                 
                 <div class="team-setup-container">
                     <div class="input-group">
-                        <label class="label-pais">Equipa 1 (Azul - Adultos/Pais)</label>
+                        <label class="label-pais">Equipe 1 (Azul - Adultos/Pais)</label>
                         <input type="text" id="inputTeam1" placeholder="Ex: Pais, Tios, Meninos..." value="Pais" maxlength="12">
                     </div>
                     
                     <div class="input-group">
-                        <label class="label-filhos">Equipa 2 (Laranja - Jovens/Filhos)</label>
+                        <label class="label-filhos">Equipe 2 (Laranja - Jovens/Filhos)</label>
                         <input type="text" id="inputTeam2" placeholder="Ex: Filhos, Primos, Emilly..." value="Filhos" maxlength="12">
                     </div>
 
@@ -73,13 +79,13 @@
                 </div>
             </section>
 
-            <!-- 2. ÁREA DO QUIZ -->
+            <!-- ÁREA DO QUIZ -->
             <section id="quizArea" class="screen-view" style="display: none;">
                 <div class="turn-indicator" id="turnIndicator">Vez de: PAIS</div>
 
                 <div class="card-header">
                     <span class="category">Tema: <strong id="categoryText">Geral</strong></span>
-                    <div class="timer-badge" id="timerBadge">⏱️ <span id="timerText">10</span>s</div>
+                    <div class="timer-badge" id="timerBadge">⏱️ <span id="timerText">20</span>s</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
@@ -94,7 +100,7 @@
                 </div>
             </section>
 
-            <!-- 3. TELA DE FIM DE JOGO -->
+            <!-- TELA DE FIM DE JOGO -->
             <section id="endScreen" class="screen-view end-screen" style="display: none;">
                 <div class="trophy-wrapper">
                     <span class="trophy-icon">🏆</span>

@@ -1,5 +1,5 @@
 const API_URL = '/api/questions';
-const TEMPO_LIMITE = 15; // Atualizado para 15 segundos
+const TEMPO_LIMITE = 20; // Atualizado para 20 segundos
 const SUPABASE_PROJECT_URL = 'https://gwhzjalgfrrgpotwfhrj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3aHpqYWxnZnJyZ3BvdHdmaHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MDM5MjgsImV4cCI6MjEwNzQ3OTkyOH0.v50QzSs3I1QkQ94U-hX45tgZi2CZYS-EP66l-RpMILs'; // <-- Substitua pela sua chave!
 
@@ -19,7 +19,7 @@ let opcaoSelecionada = false;
 let pontosPais = 0;
 let pontosFilhos = 0;
 let categoriaSelecionada = 'Todas';
-let desempateAtivo = false; // Controle do Tira-Teima
+let desempateAtivo = false;
 
 let timerInterval = null;
 let tempoRestante = TEMPO_LIMITE;
@@ -251,11 +251,10 @@ function iniciarPartida() {
     indiceAtual = 0;
     pontosPais = 0;
     pontosFilhos = 0;
-    desempateAtivo = false; // Reinicia o status de tira-teima
+    desempateAtivo = false;
     scorePaisElement.textContent = "0";
     scoreFilhosElement.textContent = "0";
 
-    // Pega exatamente 20 perguntas para a rodada principal
     questoesAtuais = embaralhar(bancoDeQuestoes).slice(0, 20);
 
     teamSetupScreen.style.display = 'none';
@@ -267,7 +266,6 @@ function iniciarDesempate() {
     desempateAtivo = true;
     alert("⚖️ EMPATE! Preparem-se para o Tira-Teima: mais 5 perguntas decisivas!");
 
-    // Busca 5 perguntas do banco que não foram usadas nesta rodada
     const perguntasRestantes = bancoDeQuestoes.filter(q => !questoesAtuais.includes(q));
     const extras = embaralhar(perguntasRestantes).slice(0, 5);
 
@@ -277,7 +275,6 @@ function iniciarDesempate() {
         return;
     }
 
-    // Adiciona as perguntas extras e continua o jogo
     questoesAtuais = questoesAtuais.concat(extras);
     indiceAtual++;
     mostrarPergunta();
@@ -290,7 +287,6 @@ function mostrarPergunta() {
     const q = questoesAtuais[indiceAtual];
     questionText.textContent = q.content;
     
-    // Adiciona selo visual se estiver no tira-teima
     categoryText.innerHTML = desempateAtivo 
         ? `<span style="color: #ef4444;">🔥 TIRA-TEIMA</span>` 
         : q.category;
@@ -357,7 +353,7 @@ function verificarResposta(btnClicado, textoOpcao, respostaCorreta) {
     btnNext.disabled = false;
 }
 
-// 4. TIMER (Agora com 15 segundos e alerta nos últimos 5s)
+// 4. TIMER DE 20 SEGUNDOS (Com alerta sonoro nos últimos 5 segundos)
 function pararTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -407,7 +403,6 @@ btnNext.addEventListener('click', () => {
         indiceAtual++;
         mostrarPergunta();
     } else {
-        // Validação do Desempate (Morte Súbita)
         if (pontosPais === pontosFilhos && !desempateAtivo) {
             iniciarDesempate();
         } else {

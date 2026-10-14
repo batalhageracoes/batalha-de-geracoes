@@ -27,19 +27,76 @@ body {
     color: #333;
 }
 
-/* NOVA ÁREA DE LOGIN (INTEGRADA NO CARTÃO) */
+/* ÁREA DE ROLAGEM DOS TEMAS */
+.category-grid-scroll {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-bottom: 10px;
+}
+
+/* Estilização da barra de rolagem interna */
+.category-grid-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.category-grid-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 8px;
+}
+.category-grid-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+}
+.category-grid-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cat-btn {
+    padding: 14px 10px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: #f1f5f9;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.cat-btn:hover {
+    background: #0b1953;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(11, 25, 83, 0.25);
+}
+
+.cat-btn[data-cat="Todas"] {
+    grid-column: span 2;
+    background: linear-gradient(90deg, var(--btn-quiz), var(--orange-bg));
+    color: white;
+    font-size: 1.05rem;
+}
+
+/* ÁREA DE LOGIN */
 .auth-section {
-    margin-top: 25px;
-    padding-top: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
     border-top: 2px dashed #cbd5e1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .auth-text {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: #475569;
     text-align: center;
@@ -115,7 +172,7 @@ body {
     cursor: pointer;
 }
 
-/* ESTILOS DA NOVA TELA DE EQUIPAS */
+/* TELA DE EQUIPES */
 .team-setup-container {
     display: flex;
     flex-direction: column;
@@ -208,7 +265,6 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
-/* TELA DE CATEGORIAS */
 .section-title {
     font-size: 1.6rem;
     font-weight: 900;
@@ -222,39 +278,6 @@ body {
     text-align: center;
     color: #555;
     margin-bottom: 18px;
-}
-
-.category-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.cat-btn {
-    padding: 14px 10px;
-    font-size: 0.95rem;
-    font-weight: 800;
-    border: 2px solid transparent;
-    border-radius: 14px;
-    background: #f1f5f9;
-    color: #1e293b;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-
-.cat-btn:hover {
-    background: #0b1953;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(11, 25, 83, 0.25);
-}
-
-.cat-btn[data-cat="Todas"] {
-    grid-column: span 2;
-    background: linear-gradient(90deg, var(--btn-quiz), var(--orange-bg));
-    color: white;
-    font-size: 1.05rem;
 }
 
 /* ÁREA DE PERGUNTAS E CRONÔMETRO */
