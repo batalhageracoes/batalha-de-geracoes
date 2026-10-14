@@ -1,5 +1,10 @@
 const API_URL = '/api/questions';
 const TEMPO_LIMITE = 10;
+const SUPABASE_PROJECT_URL = 'https://gwhzjalgfrrgpotwfhrj.supabase.co';
+const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANON_AQUI'; // <-- Substitua pela sua chave anon public
+
+// Inicialização do cliente Supabase para Login
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY) : null;
 
 // Estado do Jogo
 let bancoDeQuestoes = [];
@@ -32,13 +37,71 @@ const scoreFilhosElement = document.getElementById('scoreFilhos');
 const timerBadge = document.getElementById('timerBadge');
 const timerText = document.getElementById('timerText');
 
+// Elementos de Login
+const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+const userProfile = document.getElementById('userProfile');
+const userAvatar = document.getElementById('userAvatar');
+const userName = document.getElementById('userName');
+const btnLogout = document.getElementById('btnLogout');
+
 // Elementos Fim de Jogo
 const winnerText = document.getElementById('winnerText');
 const finalScoreText = document.getElementById('finalScoreText');
 const btnRestart = document.getElementById('btnRestart');
 const btnChangeCat = document.getElementById('btnChangeCat');
 
-// Sintetizador de Som Nativo (AudioContext)
+// 1. GERENCIAMENTO DE AUTENTICAÇÃO GOOGLE
+async function verificarSessao() {
+    if (!supabaseClient) return;
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    atualizarInterfaceUsuario(session?.user);
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+        atualizarInterfaceUsuario(session?.user);
+    });
+}
+
+function atualizarInterfaceUsuario(user) {
+    if (user) {
+        btnGoogleLogin.style.display = 'none';
+        userProfile.style.display = 'flex';
+        userName.textContent = user.user_metadata?.full_name || user.email.split('@')[0];
+        if (user.user_metadata?.avatar_url) {
+            userAvatar.src = user.user_metadata.avatar_url;
+            userAvatar.style.display = 'block';
+        } else {
+            userAvatar.style.display = 'none';
+        }
+    } else {
+        btnGoogleLogin.style.display = 'flex';
+        userProfile.style.display = 'none';
+    }
+}
+
+if (btnGoogleLogin) {
+    btnGoogleLogin.addEventListener('click', async () => {
+        if (!supabaseClient) return;
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) alert('Erro ao iniciar login com Google: ' + error.message);
+    });
+}
+
+if (btnLogout) {
+    btnLogout.addEventListener('click', async () => {
+        if (!supabaseClient) return;
+        await supabaseClient.auth.signOut();
+    });
+}
+
+verificarSessao();
+
+// 2. SISTEMA DE ÁUDIO
 let audioCtx = null;
 function iniciarAudioCtx() {
     if (!audioCtx) {
@@ -94,7 +157,6 @@ function tocarSom(tipo) {
             osc.stop(agora + tempos[idx] + 0.4);
         });
     } else if (tipo === 'tick') {
-        // Bipe curto de alerta (880 Hz)
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
@@ -117,7 +179,7 @@ function embaralhar(array) {
     return copia;
 }
 
-// Controle do Timer
+// 3. CONTROLE DO TEMPORIZADOR
 function pararTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -133,7 +195,6 @@ function iniciarTimer() {
         tempoRestante--;
         timerText.textContent = tempoRestante;
 
-        // Bipe sonoro e alerta visual nos últimos 3 segundos
         if (tempoRestante <= 3 && tempoRestante > 0) {
             timerBadge.classList.add('warning');
             tocarSom('tick');
@@ -165,7 +226,7 @@ function tempoEsgotado() {
     btnNext.disabled = false;
 }
 
-// Seleção de Categoria
+// 4. LÓGICA DE JOGO
 document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         iniciarAudioCtx();
