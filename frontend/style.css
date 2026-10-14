@@ -27,14 +27,29 @@ body {
     color: #333;
 }
 
-/* BARRA SUPERIOR DE AUTENTICAÇÃO */
-.auth-bar {
-    position: fixed;
-    top: 14px;
-    right: 20px;
-    z-index: 50;
+/* NOVA ÁREA DE LOGIN (INTEGRADA NO CARTÃO) */
+.auth-section {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px dashed #cbd5e1;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 12px;
+}
+
+.auth-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #475569;
+    text-align: center;
+}
+
+.auth-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .google-login-btn {
@@ -44,51 +59,46 @@ body {
     background: #ffffff;
     color: #3c4043;
     border: 1px solid #dadce0;
-    padding: 8px 14px;
+    padding: 10px 18px;
     border-radius: 20px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
 }
 
 .google-login-btn:hover {
     background: #f8f9fa;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
 }
 
-.google-icon {
-    width: 18px;
-    height: 18px;
-}
+.google-icon { width: 20px; height: 20px; }
 
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    padding: 5px 12px;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 8px 16px;
     border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid #e2e8f0;
 }
 
 .user-avatar {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #1a62d6;
+    border: 2px solid var(--btn-quiz);
 }
 
 .user-name {
     font-weight: 800;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: #1e293b;
-    max-width: 130px;
+    max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -98,19 +108,54 @@ body {
     background: #ef4444;
     color: white;
     border: none;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 12px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
-    transition: opacity 0.2s;
 }
 
-.logout-btn:hover {
-    opacity: 0.85;
+/* ESTILOS DA NOVA TELA DE EQUIPAS */
+.team-setup-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 20px;
 }
 
-/* PLACAR HUD (DESKTOP) */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.label-pais { color: var(--blue-bg); }
+.label-filhos { color: var(--orange-bg); }
+
+.input-group input {
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #f8fafc;
+}
+
+.input-group input:focus {
+    border-color: var(--btn-quiz);
+    background: #ffffff;
+}
+
+/* PLACAR HUD */
 .scoreboard {
     position: fixed;
     top: 180px;
@@ -441,11 +486,6 @@ body {
         background-attachment: scroll;
         padding-bottom: 20px; 
     }
-    
-    .auth-bar {
-        top: 10px;
-        right: 12px;
-    }
 
     .scoreboard {
         position: fixed;
@@ -464,9 +504,9 @@ body {
     }
 
     .container {
-        margin-top: 170px; 
+        margin-top: 150px; 
         padding: 0;
-        width: 92%;
+        width: 94%;
         margin-bottom: 20px;
     }
 
