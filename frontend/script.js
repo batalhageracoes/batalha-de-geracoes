@@ -5,14 +5,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY) : null;
 
-// Lógica de Retenção e Nomes Customizados
+// Lógica de Sessão e Equipas
 let currentUser = null;
 let isUserLoggedIn = false;
 let partidasJogadas = 0;
 let nomeEquipa1 = "Pais";
 let nomeEquipa2 = "Filhos";
 
-// Estado do Jogo
+// Estado da Partida
 let bancoDeQuestoes = [];
 let questoesAtuais = [];
 let indiceAtual = 0;
@@ -25,7 +25,7 @@ let desempateAtivo = false;
 let timerInterval = null;
 let tempoRestante = TEMPO_LIMITE;
 
-// Elementos Principais
+// Elementos Principais dos Ecrãs
 const categoryScreen = document.getElementById('categoryScreen');
 const teamSetupScreen = document.getElementById('teamSetupScreen');
 const quizArea = document.getElementById('quizArea');
@@ -74,7 +74,18 @@ const btnChangeCat = document.getElementById('btnChangeCat');
 
 
 // ==========================================
-// 1. AUTENTICAÇÃO E HISTÓRICO DA CONTA (FORMATO B)
+// 1. GESTOR CENTRALIZADO DE ECRÃS (EVITA SOBREPOSIÇÃO)
+// ==========================================
+function alternarEcra(nomeEcra) {
+    categoryScreen.style.display = (nomeEcra === 'category') ? 'block' : 'none';
+    if (teamSetupScreen) teamSetupScreen.style.display = (nomeEcra === 'teamSetup') ? 'block' : 'none';
+    quizArea.style.display = (nomeEcra === 'quiz') ? 'block' : 'none';
+    endScreen.style.display = (nomeEcra === 'end') ? 'block' : 'none';
+}
+
+
+// ==========================================
+// 2. AUTENTICAÇÃO E HISTÓRICO DA CONTA
 // ==========================================
 async function verificarSessao() {
     if (!supabaseClient) return;
@@ -120,7 +131,7 @@ async function carregarEstatisticasUsuario() {
             personalStatsCard.style.display = 'none';
         }
     } catch (err) {
-        console.error('Erro ao ler estatísticas do usuário:', err.message);
+        console.error('Erro ao ler estatísticas do utilizador:', err.message);
     }
 }
 
@@ -145,7 +156,7 @@ async function registrarPartidaNoHistorico(vencedorTexto) {
             carregarEstatisticasUsuario();
         }
     } catch (err) {
-        console.error('Erro ao salvar histórico de partida:', err.message);
+        console.error('Erro ao guardar histórico:', err.message);
     }
 }
 
@@ -178,7 +189,7 @@ if (btnGoogleLogin) {
             provider: 'google',
             options: { redirectTo: window.location.origin }
         });
-        if (error) alert('Erro ao fazer login: ' + error.message);
+        if (error) alert('Erro ao iniciar sessão: ' + error.message);
     });
 }
 
@@ -192,7 +203,7 @@ if (btnLogout) {
 verificarSessao();
 
 // ==========================================
-// 2. SISTEMA DE ÁUDIO
+// 3. SISTEMA DE ÁUDIO
 // ==========================================
 let audioCtx = null;
 function iniciarAudioCtx() {
@@ -258,14 +269,13 @@ function tocarSom(tipo) {
 }
 
 // ==========================================
-// 3. FLUXO DO JOGO COM REVEZAMENTO 10x10 RIGOROSO
+// 4. FLUXO DO JOGO COM TRANSIÇÕES LIMPAS
 // ==========================================
 
 function validarBarreiraLogin() {
     if (partidasJogadas >= 1 && !isUserLoggedIn) {
-        alert("🎉 Vocês já jogaram a vossa partida de teste grátis!\n\nPara desbloquear partidas ilimitadas e registrar o histórico da família, faça login com o Google logo abaixo dos temas.");
-        endScreen.style.display = 'none';
-        categoryScreen.style.display = 'block';
+        alert("🎉 Já jogaram a vossa partida de teste grátis!\n\nPara desbloquear partidas ilimitadas e registar o histórico da família, inicie sessão com o Google abaixo dos temas.");
+        alternarEcra('category');
         return false;
     }
     return true;
@@ -290,8 +300,7 @@ async function carregarPerguntas() {
 
         if (Array.isArray(data) && data.length > 0) {
             bancoDeQuestoes = data;
-            categoryScreen.style.display = 'none';
-            teamSetupScreen.style.display = 'block';
+            alternarEcra('teamSetup');
         } else {
             alert(`Nenhuma pergunta encontrada para o tema "${categoriaSelecionada}".`);
         }
@@ -329,25 +338,19 @@ function iniciarPartida() {
     scorePaisElement.textContent = "0";
     scoreFilhosElement.textContent = "0";
 
-    // Separação em dois bancos independentes:
-    // Equipe 1 (Pais) responde às perguntas modernas (target_generation === 'Filhos')
-    // Equipe 2 (Filhos) responde às perguntas antigas (target_generation === 'Pais')
     const poolEquipe1 = embaralhar(bancoDeQuestoes.filter(q => q.target_generation === 'Filhos'));
     const poolEquipe2 = embaralhar(bancoDeQuestoes.filter(q => q.target_generation === 'Pais'));
 
     const selecionadasEq1 = poolEquipe1.slice(0, 10);
     const selecionadasEq2 = poolEquipe2.slice(0, 10);
 
-    // Montagem do revezamento estrito (10 para cada lado intercaladas):
-    // Rodada 1: Eq1 -> Rodada 2: Eq2 -> Rodada 3: Eq1 ... até 20 perguntas
     questoesAtuais = [];
     for (let i = 0; i < 10; i++) {
         if (selecionadasEq1[i]) questoesAtuais.push(selecionadasEq1[i]);
         if (selecionadasEq2[i]) questoesAtuais.push(selecionadasEq2[i]);
     }
 
-    teamSetupScreen.style.display = 'none';
-    quizArea.style.display = 'block';
+    alternarEcra('quiz');
     mostrarPergunta();
 }
 
@@ -392,7 +395,6 @@ function mostrarPergunta() {
     const geracaoDaPergunta = q.target_generation || 'Pais';
     let equipaAtual, classeEquipa;
     
-    // Identificação visual do turno
     if (geracaoDaPergunta === 'Pais') {
         equipaAtual = nomeEquipa2;
         classeEquipa = 'turn-filhos';
@@ -452,7 +454,7 @@ function verificarResposta(btnClicado, textoOpcao, respostaCorreta) {
     btnNext.disabled = false;
 }
 
-// 4. TIMER DE 20 SEGUNDOS
+// 5. TEMPORIZADOR
 function pararTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -522,8 +524,7 @@ function soltarFogosDeArtificio(corHex) {
 
 function mostrarEcraFinal() {
     pararTimer();
-    quizArea.style.display = 'none';
-    endScreen.style.display = 'block';
+    alternarEcra('end');
 
     let vencedor = "EMPATE!";
     let corDestaque = "#ffd700";
@@ -546,7 +547,6 @@ function mostrarEcraFinal() {
     tocarSom('vitoria');
     soltarFogosDeArtificio(corDestaque);
 
-    // Registra no histórico privado se o usuário estiver logado
     if (isUserLoggedIn) {
         registrarPartidaNoHistorico(vencedor);
     }
@@ -560,6 +560,5 @@ btnRestart.addEventListener('click', () => {
 btnChangeCat.addEventListener('click', () => {
     if (!validarBarreiraLogin()) return;
     pararTimer();
-    endScreen.style.display = 'none';
-    categoryScreen.style.display = 'block';
+    alternarEcra('category');
 });
