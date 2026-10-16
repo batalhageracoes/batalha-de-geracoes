@@ -74,7 +74,7 @@ const btnChangeCat = document.getElementById('btnChangeCat');
 
 
 // ==========================================
-// 1. GESTOR CENTRALIZADO DE ECRÃS (EVITA SOBREPOSIÇÃO)
+// 1. GESTOR CENTRALIZADO DE ECRÃS
 // ==========================================
 function alternarEcra(nomeEcra) {
     categoryScreen.style.display = (nomeEcra === 'category') ? 'block' : 'none';
@@ -269,7 +269,7 @@ function tocarSom(tipo) {
 }
 
 // ==========================================
-// 4. FLUXO DO JOGO COM TRANSIÇÕES LIMPAS
+// 4. FLUXO DO JOGO COM TRANSIÇÕES E REVEZAMENTO
 // ==========================================
 
 function validarBarreiraLogin() {
@@ -414,6 +414,9 @@ function mostrarPergunta() {
     const letras = ['A', 'B', 'C', 'D'];
     let opcoes = q.options;
     if (typeof opcoes === 'string') opcoes = JSON.parse(opcoes);
+
+    // EMBARALHAMENTO DAS OPÇÕES ENTRE A, B, C E D
+    opcoes = embaralhar(opcoes);
 
     opcoes.forEach((opt, index) => {
         const btn = document.createElement('button');
